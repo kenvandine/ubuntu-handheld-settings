@@ -66,7 +66,7 @@ jobs:
         run: |
           base_version=$(dpkg-parsechangelog -S Version)
           dch --newversion "${base_version}+${REVISION}" \
-            --distribution UNRELEASED --force-distribution \
+            --distribution resolute --force-distribution \
             -m "Publish to ken-vandine/gaming PPA."
 
           debuild -S -k"$KEYID"
