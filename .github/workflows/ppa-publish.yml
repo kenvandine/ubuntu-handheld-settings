@@ -40,7 +40,6 @@ jobs:
         run: |
           gpg --clearsign -o *.changes *.changes
           gpg --detach-sign -o *.dsc *.dsc
-          gpg --detach-sign -o *.tar.* *.tar.* 2>/dev/null || true
 
       - name: Upload to PPA
         run: |
