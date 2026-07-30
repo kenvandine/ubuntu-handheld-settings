@@ -70,4 +70,11 @@ jobs:
 
           debuild -S -k"$KEYID"
 
+          # Debug: check signatures
+          echo "=== .changes file ==="
+          head -5 ../*_source.changes
+          echo ""
+          echo "=== gpg verify ==="
+          gpg --verify ../*_source.changes 2>&1 || true
+
           dput ken-vandine-gaming ../*_source.changes
