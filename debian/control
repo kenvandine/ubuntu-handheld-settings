@@ -1,0 +1,14 @@
+Source: ubuntu-handheld-settings
+Section: x11
+Priority: optional
+Maintainer: Ken VanDine <ken.vandine@canonical.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: ubuntu-handheld-settings
+Architecture: all
+Description: Gaming-optimized gsettings overrides for Ubuntu handhelds
+ Ubuntu handheld devices and gaming consoles benefit from a dark UI theme
+ to reduce screen glare and save battery on OLED displays. This package
+ provides gsettings overrides that prefer dark mode across GTK applications.
