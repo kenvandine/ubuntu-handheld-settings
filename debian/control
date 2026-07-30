@@ -8,6 +8,7 @@ Rules-Requires-Root: no
 
 Package: ubuntu-handheld-settings
 Architecture: all
+Depends: ${misc:Depends}
 Description: Gaming-optimized gsettings overrides for Ubuntu handhelds
  Ubuntu handheld devices and gaming consoles benefit from a dark UI theme
  to reduce screen glare and save battery on OLED displays. This package

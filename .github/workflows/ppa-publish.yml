@@ -14,6 +14,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DEBEMAIL: ken.vandine@canonical.com
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,14 +38,13 @@ jobs:
         id: gpg
         uses: crazy-max/ghaction-import-gpg@v7
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_private_key: ${{ secrets.PPA_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PPA_GPG_PASSPHRASE }}
 
       - name: Verify GPG key
         run: |
           echo "Imported key: ${{ steps.gpg.outputs.keyid }}"
           gpg --list-secret-keys --keyid-format long
-          gpg --list-keys --keyid-format long
 
       - name: Configure dput
         run: |
@@ -61,7 +62,6 @@ jobs:
         env:
           KEYID: ${{ steps.gpg.outputs.keyid }}
           REVISION: ${{ github.event.inputs.revision || '1' }}
-          DEBEMAIL: ken.vandine@canonical.com
         run: |
           base_version=$(dpkg-parsechangelog -S Version)
           dch --newversion "${base_version}+${REVISION}" \
@@ -70,8 +70,4 @@ jobs:
 
           debuild -S -k"$KEYID"
 
-          # Explicitly sign the changes file
-          CHANGES=$(ls ../*_source.changes)
-          gpg --clearsign --default-key "$KEYID" -o "${CHANGES}.asc" "$CHANGES" && mv "${CHANGES}.asc" "$CHANGES"
-
-          dput ken-vandine-gaming "$CHANGES"
+          dput ken-vandine-gaming ../*_source.changes
