@@ -39,6 +39,12 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
+      - name: Verify GPG key
+        run: |
+          echo "Imported key: ${{ steps.gpg.outputs.keyid }}"
+          gpg --list-secret-keys --keyid-format long
+          gpg --list-keys --keyid-format long
+
       - name: Configure dput
         run: |
           cat > ~/.dput.cf <<EOF
@@ -64,4 +70,8 @@ jobs:
 
           debuild -S -k"$KEYID"
 
-          dput ken-vandine-gaming ../*_source.changes
+          # Explicitly sign the changes file
+          CHANGES=$(ls ../*_source.changes)
+          gpg --clearsign --default-key "$KEYID" -o "${CHANGES}.asc" "$CHANGES" && mv "${CHANGES}.asc" "$CHANGES"
+
+          dput ken-vandine-gaming "$CHANGES"
