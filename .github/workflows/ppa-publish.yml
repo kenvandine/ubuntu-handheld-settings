@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEBEMAIL: ken.vandine@canonical.com
+      EDITOR: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
