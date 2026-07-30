@@ -1,0 +1,40 @@
+name: Publish to PPA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'debian/**'
+      - '.github/workflows/*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debhelper devscripts dpkg-dev
+
+      - name: Build package
+        run: |
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload to PPA
+        uses: nicmccrystal/ppa-publish-action@v1
+        with:
+          ppa: ken-vandine/gaming
+          changes_file: "*.changes"
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          dput_key: ${{ secrets.DPUT_KEY }}
