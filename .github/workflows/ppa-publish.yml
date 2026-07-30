@@ -41,6 +41,16 @@ jobs:
           gpg --clearsign -o *.changes *.changes
           gpg --detach-sign -o *.dsc *.dsc
 
+      - name: Create dput config
+        run: |
+          cat > ~/.dput.cf <<EOF
+          [ppa:ken-vandine/gaming]
+          method = ftp
+          incoming = incoming
+          login = ${{ secrets.LAUNCHPAD_USERNAME }}
+          password = ${{ secrets.DPUT_KEY }}
+          EOF
+
       - name: Upload to PPA
         run: |
           dput ppa:ken-vandine/gaming *.changes
