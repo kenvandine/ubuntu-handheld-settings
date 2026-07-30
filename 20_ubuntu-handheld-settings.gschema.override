@@ -1,11 +1,12 @@
-# Ubuntu Handheld / Gaming Console dark mode defaults
+# Ubuntu Handheld / Gaming Console defaults
 # These overrides apply to all users on handheld devices
 
-# GTK3/GTK4 prefer dark style
+# GTK3/GTK4 prefer dark style and 12h clock
 [org.gnome.desktop.interface]
 gtk-theme = 'Yaru-dark'
 icon-theme = 'Yaru-dark'
 color-scheme = 'prefer-dark'
+clock-format = '12h'
 
 [org.gnome.desktop.interface:ubuntu-handheld]
 gtk-theme = 'Yaru-dark'
