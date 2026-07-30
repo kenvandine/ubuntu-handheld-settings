@@ -1,12 +1,12 @@
 name: Publish to PPA
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'debian/**'
-      - '.github/workflows/*.yml'
   workflow_dispatch:
+    inputs:
+      revision:
+        description: 'Upload revision number'
+        required: false
+        default: '1'
 
 permissions:
   contents: read
@@ -24,33 +24,43 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debhelper devscripts dpkg-dev dput
+          sudo apt-get install -y devscripts debhelper equivs dput
 
-      - name: Build package
+      - name: Install build dependencies
         run: |
-          dpkg-buildpackage -us -uc -b
+          sudo mk-build-deps --install --remove \
+            --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
+            debian/control
 
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Sign changes
-        run: |
-          gpg --clearsign -o *.changes *.changes
-          gpg --detach-sign -o *.dsc *.dsc
-
-      - name: Create dput config
+      - name: Configure dput
         run: |
           cat > ~/.dput.cf <<EOF
-          [ppa:ken-vandine/gaming]
+          [ken-vandine-gaming]
+          fqdn = upload.ppa.launchpad.net
           method = ftp
-          incoming = incoming
-          login = ${{ secrets.LAUNCHPAD_USERNAME }}
-          password = ${{ secrets.DPUT_KEY }}
+          incoming = ~ken-vandine/ubuntu/gaming/
+          login = anonymous
+          allow_unsigned_uploads = 0
+          passive_ftp = True
           EOF
 
-      - name: Upload to PPA
+      - name: Build and upload
+        env:
+          KEYID: ${{ steps.gpg.outputs.keyid }}
+          REVISION: ${{ github.event.inputs.revision || '1' }}
         run: |
-          dput ppa:ken-vandine/gaming *.changes
+          base_version=$(dpkg-parsechangelog -S Version)
+          dch --newversion "${base_version}+${REVISION}" \
+            --distribution UNRELEASED --force-distribution \
+            "Publish to ken-vandine/gaming PPA."
+
+          debuild -S -k"$KEYID"
+
+          dput ken-vandine-gaming ../*UNRELEASED*_source.changes
