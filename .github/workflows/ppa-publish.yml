@@ -24,17 +24,24 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debhelper devscripts dpkg-dev
+          sudo apt-get install -y debhelper devscripts dpkg-dev dput
 
       - name: Build package
         run: |
           dpkg-buildpackage -us -uc -b
 
-      - name: Upload to PPA
-        uses: nicmccrystal/ppa-publish-action@v1
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
-          ppa: ken-vandine/gaming
-          changes_file: "*.changes"
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          dput_key: ${{ secrets.DPUT_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Sign changes
+        run: |
+          gpg --clearsign -o *.changes *.changes
+          gpg --detach-sign -o *.dsc *.dsc
+          gpg --detach-sign -o *.tar.* *.tar.* 2>/dev/null || true
+
+      - name: Upload to PPA
+        run: |
+          dput ppa:ken-vandine/gaming *.changes
