@@ -55,12 +55,13 @@ jobs:
         env:
           KEYID: ${{ steps.gpg.outputs.keyid }}
           REVISION: ${{ github.event.inputs.revision || '1' }}
+          DEBEMAIL: ken.vandine@canonical.com
         run: |
           base_version=$(dpkg-parsechangelog -S Version)
           dch --newversion "${base_version}+${REVISION}" \
             --distribution UNRELEASED --force-distribution \
-            "Publish to ken-vandine/gaming PPA."
+            -m "Publish to ken-vandine/gaming PPA."
 
           debuild -S -k"$KEYID"
 
-          dput ken-vandine-gaming ../*UNRELEASED*_source.changes
+          dput ken-vandine-gaming ../*_source.changes
