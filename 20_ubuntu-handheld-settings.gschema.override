@@ -1,0 +1,18 @@
+# Ubuntu Handheld / Gaming Console dark mode defaults
+# These overrides apply to all users on handheld devices
+
+# GTK3/GTK4 prefer dark style
+[org.gnome.desktop.interface]
+gtk-theme = 'Yaru-dark'
+icon-theme = 'Yaru-dark'
+color-scheme = 'prefer-dark'
+
+[org.gnome.desktop.interface:ubuntu-handheld]
+gtk-theme = 'Yaru-dark'
+icon-theme = 'Yaru-dark'
+cursor-theme = 'Yaru'
+font-name = 'Ubuntu Sans 11'
+monospace-font-name = 'Ubuntu Sans Mono 11'
+document-font-name = 'Sans 11'
+font-antialiasing = 'rgba'
+color-scheme = 'prefer-dark'
