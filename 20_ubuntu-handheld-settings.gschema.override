@@ -22,3 +22,16 @@ color-scheme = 'prefer-dark'
 [com.ubuntu.HandheldShell]
 sort-order='curated'
 show-all-apps=false
+
+# Window manager preferences: drop titlebar button controls and titlebar click actions
+[org.gnome.desktop.wm.preferences]
+button-layout = ''
+action-double-click-titlebar = 'none'
+action-middle-click-titlebar = 'none'
+action-right-click-titlebar = 'none'
+
+[org.gnome.desktop.wm.preferences:ubuntu-handheld]
+button-layout = ''
+action-double-click-titlebar = 'none'
+action-middle-click-titlebar = 'none'
+action-right-click-titlebar = 'none'
